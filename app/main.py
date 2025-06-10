@@ -11,6 +11,9 @@ from urllib.parse import urlparse
 
 from flask import abort, Flask, jsonify, render_template
 
+from app.observability import log_settings, setup_logging
+from app.settings import settings
+
 
 def fetch(url):
     resp = requests.get(url)
@@ -53,9 +56,16 @@ def get_version():
 
 def create_app(settings_overrides=None):
     app = Flask(__name__)
+    app.config.from_object("app.settings.settings")
 
     if settings_overrides:
         app.config.update(settings_overrides)
+
+    setup_logging(
+        env=settings.APP_ENVIRONMENT, logging_level=settings.APP_LOGGING_LEVEL
+    )
+
+    log_settings(app)
 
     @app.route("/", methods=["GET"])
     def index_page():
