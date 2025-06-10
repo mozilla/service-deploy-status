@@ -25,3 +25,6 @@ format: _env build
     # NOTE(willkg): this runs in a utility service which volume-mounts the
     # codebase so it can make changes
     docker compose run --rm utility shell ruff format /app_code
+
+test: _env build
+    docker compose run --rm web shell pytest tests/
