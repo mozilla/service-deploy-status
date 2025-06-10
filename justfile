@@ -12,7 +12,7 @@ build: _env
     docker compose build --progress plain
 
 run: _env build
-    docker compose up web
+    docker compose up --watch web
 
 shell: _env build
     docker compose run --rm web shell

@@ -1,16 +1,12 @@
 ---
 services:
-  base:
+  web:
+    image: service-deploy-status
     build:
       dockerfile: Dockerfile
       args:
         userid: ${USE_UID:-10001}
         groupid: ${USE_GID:-10001}
-    image: service-deploy-status
-
-  web:
-    extends:
-      service: base
     env_file:
       - config/local_dev.env
       - .env
@@ -26,10 +22,7 @@ services:
 
   utility:
     extends:
-      service: base
-    env_file:
-      - config/local_dev.env
-      - .env
+      service: web
     command: shell
     volumes:
       - .:/app_code

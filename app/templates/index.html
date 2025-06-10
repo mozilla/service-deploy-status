@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Service deploy status</title>
+  </head>
+  <body>
+    <h1>Service deploy status</h1>
+    <ul>
+      {% for system in systems %}
+        <li><a href="{{ url_for("system_page", system=system) }}">{{ system }}</a></li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

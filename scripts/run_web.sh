@@ -15,7 +15,7 @@
 
 cd /app/
 
-uv run --no-project gunicorn \
+exec uv run --no-project gunicorn \
     --bind 0.0.0.0:"${PORT}" \
     --timeout "${APP_GUNICORN_TIMEOUT}" \
     --workers "${APP_GUNICORN_WORKERS}" \
