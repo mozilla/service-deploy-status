@@ -4,8 +4,10 @@
 
 import functools
 import json
+import logging
 import os
 import requests
+import time
 import tomllib
 from urllib.parse import urlparse
 
@@ -28,6 +30,41 @@ def fetch_history_from_github(user, repo, from_sha):
     # FIXME(willkg): handle 429s, retrying, and other response codes
     resp.raise_for_status()
     return resp.json()
+
+
+def log_render_time(fun):
+    fun_name = fun.__name__
+    logger = logging.getLogger(__name__)
+
+    @functools.wraps(fun)
+    def _log_render_time(*args, **kwargs):
+        start_time = time.time()
+        status_code = 0
+        try:
+            ret = fun(*args, **kwargs)
+            if isinstance(ret, str):
+                status_code = 200
+            elif isinstance(ret, tuple) and isinstance(ret[1], int):
+                status_code = ret[1]
+            else:
+                logger.info("unknown return type: %s %s", type(ret), repr(ret)[:20])
+            return ret
+        except Exception as exc:
+            if hasattr(exc, "code"):
+                status_code = exc.code
+            else:
+                status_code = 500
+            raise exc
+
+        finally:
+            logger.info(
+                "%s (%s) render time: %s",
+                fun_name,
+                status_code,
+                f"{time.time() - start_time:0.03f}s",
+            )
+
+    return _log_render_time
 
 
 @functools.cache
@@ -68,12 +105,14 @@ def create_app(settings_overrides=None):
     log_settings(app)
 
     @app.route("/", methods=["GET"])
+    @log_render_time
     def index_page():
         systems_data = get_systems_data()
         systems = list(sorted(systems_data.keys()))
         return render_template("index.html", systems=systems)
 
     @app.route("/__heartbeat__", methods=["GET"])
+    @log_render_time
     def dockerflow_heartbeat():
         # Check GitHub status and return whether GitHub is up or not
         resp = requests.get("https://www.githubstatus.com/api/v2/status.json")
@@ -86,15 +125,18 @@ def create_app(settings_overrides=None):
         return jsonify({"github": "ok"}), 200
 
     @app.route("/__lbheartbeat__", methods=["GET"])
+    @log_render_time
     def dockerflow_lbheartbeat():
         # Returns an HTTP 200 with an empty response
         return "{}"
 
     @app.route("/__version__", methods=["GET"])
+    @log_render_time
     def dockerflow_version():
         return jsonify(get_version()), 200
 
     @app.route("/system/<system>", methods=["GET"])
+    @log_render_time
     def system_page(system):
         systems_data = get_systems_data()
         if system not in systems_data:

@@ -5,16 +5,25 @@
 import json
 
 import pytest
+import responses
 
 from app import main
 
 
-def test_index_page(client):
+def test_index_page(client, caplog):
     resp = client.get("/")
     assert resp.status_code == 200
 
     # Verify that one of the systems in app/systems.toml is in the output
     assert b"socorro" in resp.data
+
+    # Verify the render time was logged
+    records = [
+        record.message
+        for record in caplog.records
+        if record.message.startswith("index_page (200) render time")
+    ]
+    assert len(records) == 1
 
 
 def test_dockerflow_heartbeat(client, responses):
@@ -161,7 +170,6 @@ def fake_systems_data(monkeypatch, responses):
 def test_system_page(client, responses, fake_systems_data):
     resp = client.get("/system/exampleapp")
     assert resp.status_code == 200
-    print(resp.data)
 
     # It produces a lot of output, so we're going to test for the existence of some
     # strings and then call it a day.
@@ -172,3 +180,20 @@ def test_system_page(client, responses, fake_systems_data):
         b"ddb3277c chore: update README (willkg)",
     ]:
         assert expected_string in resp.data
+
+
+def test_system_page_bad_system(client, responses, fake_systems_data, caplog):
+    # NOTE(willkg): we want to use the fake system data, but we don't want to enforce
+    # that all responses are matched, so we remove the expected responses.
+    responses.reset()
+
+    resp = client.get("/system/badvalue")
+    assert resp.status_code == 404
+
+    # Verify the render time was logged
+    records = [
+        record.message
+        for record in caplog.records
+        if record.message.startswith("system_page (404) render time")
+    ]
+    assert len(records) == 1
