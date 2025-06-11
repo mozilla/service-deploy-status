@@ -17,7 +17,7 @@ env:
   # rethink this part. Maybe push to a general GAR target and have all deploys
   # for tenants trigger on that. Or maybe push to multiple GAR targets--one for
   # each tenant.
-  IMAGE_NAME: service-deploy-status-web
+  IMAGE_NAME: service-deploy-status
   # NOTE(willkg): service-deploy-status is deployed in the o11y-demo tenant in
   # sandbox which only has nonprod
   GCP_PROJECT_ID: moz-fx-o11y-demo-nonprod
