@@ -10,7 +10,7 @@ _env:
 
 # Build the Docker images
 build: _env
-    docker compose build --progress plain
+    docker compose --progress plain build
 
 # Run web service and backing services
 run: _env build
@@ -26,17 +26,17 @@ test: _env build
 
 # Lint code files
 lint: _env build
-    docker compose run --rm web shell ruff format --check
-    docker compose run --rm web shell ruff check
+    docker compose run --rm --no-deps web shell ruff format --check
+    docker compose run --rm --no-deps web shell ruff check
 
 # Re-format code files
 format: _env build
-    docker compose run --rm --volume=.:/app_code web shell ruff format /app_code
+    docker compose run --rm --no-deps --volume=.:/app_code web shell ruff format /app_code
 
 # List outdated dependencies
 list-outdated: _env build
-    docker compose run --rm web shell uv pip list --outdated
+    docker compose run --rm --no-deps web shell uv pip list --outdated
 
 # Update uv.lock file
 update-lock: _env build
-    docker compose run --rm --volume=.:/app web shell uv lock --upgrade
+    docker compose run --rm --no-deps --volume=.:/app web shell uv lock --upgrade
