@@ -10,7 +10,7 @@ _env:
 
 # Build the Docker images
 build: _env
-    docker compose build --progress plain
+    docker compose --progress plain build
 
 # Run web service and backing services
 run: _env build
