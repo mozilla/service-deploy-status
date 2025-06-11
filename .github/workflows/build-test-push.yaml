@@ -35,7 +35,7 @@ jobs:
         run: |
           uname -v
           docker info
-          just version
+          just --version
       - name: Create version.json
         run: |
           # create a version.json per
