@@ -5,7 +5,6 @@
 import json
 
 import pytest
-import responses
 
 from app import main
 

@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 
 from flask import abort, Flask, jsonify, render_template
 
+
 from app.observability import log_settings, setup_logging
 from app.settings import settings
 

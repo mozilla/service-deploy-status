@@ -22,13 +22,6 @@ services:
         - path: ./app
           action: rebuild
 
-  utility:
-    extends:
-      service: web
-    command: shell
-    volumes:
-      - .:/app_code
-
   otel-collector:
     image: otel/opentelemetry-collector-contrib
     command: --config=/etc/otelcol-config.yaml
