@@ -24,9 +24,13 @@ environment_stage = "https://crash-stats.allizom.org"
 environment_prod = "https://crash-stats.mozilla.org"
 
 
-[mzcld-demo]
+[cloud-eng]
 
-[mzcld-demo.mzcld-demo]
+[cloud-eng.mzcld-demo]
 name = "MozCloud Demo"
 environment_stage = "https://stage.mzcld-demo.nonprod.webservices.mozgcp.net"
 environment_prod = "https://prod.mzcld-demo.prod.webservices.mozgcp.net"
+
+[cloud-eng.o11y-demo]
+name = "o11y Demo"
+environment_dev = "https://dev.o11y-demo.nonprod.sandbox.mozgcp.net/"
