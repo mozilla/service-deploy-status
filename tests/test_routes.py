@@ -71,12 +71,22 @@ def test_dockerflow_version(client):
 def fake_systems_data(monkeypatch, responses):
     def get_systems_data_mock():
         return {
-            "exampleapp": {
-                "service1": {
-                    "name": "Service 1",
-                    "environment_stage": "http://service1-stage.example.com",
-                    "environment_prod": "http://service1.example.com",
-                }
+            "systems": {
+                "exampleapp": [
+                    {
+                        "name": "Service 1",
+                        "environments": [
+                            {
+                                "name": "stage",
+                                "host": "http://service1-stage.example.com",
+                            },
+                            {
+                                "name": "prod",
+                                "host": "http://service1.example.com",
+                            },
+                        ],
+                    },
+                ],
             }
         }
 

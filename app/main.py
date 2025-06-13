@@ -8,11 +8,10 @@ import logging
 import os
 import requests
 import time
-import tomllib
 from urllib.parse import urlparse
 
 from flask import abort, Flask, jsonify, render_template
-
+import yaml
 
 from app.observability import log_settings, setup_logging
 from app.settings import settings
@@ -71,8 +70,8 @@ def log_render_time(fun):
 @functools.cache
 def get_systems_data():
     # NOTE(willkg): relative to repository root
-    with open("app/systems.toml", "rb") as fp:
-        data = tomllib.load(fp)
+    with open("app/systems.yaml", "rb") as fp:
+        data = yaml.safe_load(fp)
 
     return data
 
@@ -105,13 +104,6 @@ def create_app(settings_overrides=None):
 
     log_settings(app)
 
-    @app.route("/", methods=["GET"])
-    @log_render_time
-    def index_page():
-        systems_data = get_systems_data()
-        systems = list(sorted(systems_data.keys()))
-        return render_template("index.html", systems=systems)
-
     @app.route("/__heartbeat__", methods=["GET"])
     @log_render_time
     def dockerflow_heartbeat():
@@ -136,29 +128,31 @@ def create_app(settings_overrides=None):
     def dockerflow_version():
         return jsonify(get_version()), 200
 
+    @app.route("/", methods=["GET"])
+    @log_render_time
+    def index_page():
+        systems_data = get_systems_data()
+        systems = list(sorted(systems_data["systems"].keys()))
+        return render_template("index.html", systems=systems)
+
     @app.route("/system/<system>", methods=["GET"])
     @log_render_time
     def system_page(system):
         systems_data = get_systems_data()
-        if system not in systems_data:
+        if system not in systems_data["systems"]:
             abort(404)
 
-        system_data = systems_data[system]
-
         output = []
-        for service_name, service in system_data.items():
-            output.append(f"{service_name}: {service.get('name', '')}")
+        for service in systems_data["systems"][system]:
+            output.append(f"{service['name']}: {service.get('description', '--')}")
 
-            environments = [
-                key.split("_")[1]
-                for key in service.keys()
-                if key.startswith("environment_")
-            ]
+            environments = service["environments"]
 
-            for env_name in environments:
-                host = service[f"environment_{env_name}"].rstrip("/")
-                output.append(f"  {env_name}: {host}")
-                host_version = fetch(f"{host}/__version__")
+            for environment in environments:
+                env_name = environment["name"]
+                env_host = environment["host"]
+                output.append(f"  {env_name}: {env_host}")
+                host_version = fetch(f"{env_host}/__version__")
 
                 source = host_version["source"]
                 commit = host_version["commit"]
