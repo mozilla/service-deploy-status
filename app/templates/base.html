@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}TITLE{% endblock %}</title>
+  </head>
+  <body>
+<p>
+  [
+  <a href="{{ url_for('index_page') }}">Service Deploy Status</a> |
+  o11y demo |
+  <a href="https://github.com/mozilla/service-deploy-status">Source code</a> |
+  <a href="https://github.com/mozilla/service-deploy-status/issues">Issues</a>
+  ]
+</p>
+{% block body %}
+{% endblock %}
+  </body>
+</html>
