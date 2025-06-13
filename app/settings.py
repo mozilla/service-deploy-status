@@ -10,8 +10,9 @@ class Settings(BaseSettings):
     # Sets the opentelemetry collector endpoint
     APP_OTEL_COLLECTOR_ENDPOINT: str = "localhost:4317"
 
-    # "local", "stage", or "prod"
-    APP_ENVIRONMENT: str = "local"
+    # "local", "stage", or "prod"; defaults to "prod" because that's generally a safer
+    # default and less likely to reveal secrets
+    APP_ENVIRONMENT: str = "prod"
 
     # "INFO" or "WARNING"
     APP_LOGGING_LEVEL: str = "INFO"
