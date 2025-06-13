@@ -427,6 +427,7 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "pytest" },
     { name = "pytest-responses" },
+    { name = "pyyaml" },
     { name = "requests" },
     { name = "responses" },
     { name = "ruff" },
@@ -434,16 +435,17 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dockerflow", specifier = ">=2024.4.2" },
-    { name = "flask", specifier = ">=3.1.1" },
-    { name = "gunicorn", specifier = ">=23.0.0" },
-    { name = "pydantic", specifier = ">=2.11.5" },
-    { name = "pydantic-settings", specifier = ">=2.9.1" },
-    { name = "pytest", specifier = ">=8.4.0" },
-    { name = "pytest-responses", specifier = ">=0.5.1" },
-    { name = "requests", specifier = ">=2.32.4" },
-    { name = "responses", specifier = ">=0.25.7" },
-    { name = "ruff", specifier = ">=0.11.13" },
+    { name = "dockerflow", specifier = "~=2024.4.2" },
+    { name = "flask", specifier = "~=3.1.1" },
+    { name = "gunicorn", specifier = "~=23.0.0" },
+    { name = "pydantic", specifier = "~=2.11.5" },
+    { name = "pydantic-settings", specifier = "~=2.9.1" },
+    { name = "pytest", specifier = "~=8.4.0" },
+    { name = "pytest-responses", specifier = "~=0.5.1" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
+    { name = "requests", specifier = "~=2.32.4" },
+    { name = "responses", specifier = "~=0.25.7" },
+    { name = "ruff", specifier = "~=0.11.13" },
 ]
 
 [[package]]

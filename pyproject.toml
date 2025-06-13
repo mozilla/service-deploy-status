@@ -6,14 +6,15 @@ license = {text = "MPLv2"}
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "dockerflow-=2024.4.2",
-    "flask-=3.1.1",
-    "gunicorn-=23.0.0",
-    "pydantic-=2.11.5",
-    "pydantic-settings-=2.9.1",
-    "pytest-=8.4.0",
-    "pytest-responses-=0.5.1",
-    "requests-=2.32.4",
-    "responses-=0.25.7",
-    "ruff-=0.11.13",
+    "dockerflow~=2024.4.2",
+    "flask~=3.1.1",
+    "gunicorn~=23.0.0",
+    "pydantic~=2.11.5",
+    "pydantic-settings~=2.9.1",
+    "pytest~=8.4.0",
+    "pytest-responses~=0.5.1",
+    "pyyaml>=6.0.2",
+    "requests~=2.32.4",
+    "responses~=0.25.7",
+    "ruff~=0.11.13",
 ]
