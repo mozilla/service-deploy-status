@@ -142,58 +142,64 @@ def create_app(settings_overrides=None):
         if system not in systems_data["systems"]:
             abort(404)
 
-        output = []
+        data = []
         for service in systems_data["systems"][system]:
-            output.append(f"{service['name']}: {service.get('description', '--')}")
+            service_data = {
+                "name": service["name"],
+                "description": service.get("description", "--"),
+            }
 
-            environments = service["environments"]
+            environments_data = []
+            for environment in service["environments"]:
+                environment_data = {
+                    "name": environment["name"],
+                    "host": environment["host"],
+                }
 
-            for environment in environments:
-                env_name = environment["name"]
-                env_host = environment["host"]
-                output.append(f"  {env_name}: {env_host}")
-                host_version = fetch(f"{env_host}/__version__")
-
-                source = host_version["source"]
-                commit = host_version["commit"]
-                tag = host_version.get("version") or "(none)"
-                parsed = urlparse(source)
+                host_version = fetch(f"{environment['host']}/__version__")
+                environment_data["commit"] = host_version["commit"]
+                environment_data["source"] = host_version["source"]
+                environment_data["tag"] = host_version.get("version") or "(none)"
+                parsed = urlparse(environment_data["source"])
                 _, user, repo = parsed.path.split("/")
 
-                output.append(f"  {repo}  {commit}  {tag}")
+                environment_data["user"] = user
+                environment_data["repo"] = repo
 
-                history = fetch_history_from_github(user, repo, commit)
+                history = fetch_history_from_github(
+                    user=user,
+                    repo=repo,
+                    from_sha=environment_data["commit"],
+                )
                 if history["total_commits"] == 0:
-                    output.append("  status: up-to-date")
+                    environment_data["status"] = "up-to-date"
+                    environment_data["commits"] = []
 
                 else:
-                    output.append(f"  status: {history['total_commits']} commits")
-                    output.append("")
-                    output.append(
-                        f"  https://github.com/{user}/{repo}/compare/{commit[:8]}...main"
-                    )
-                    output.append("")
+                    environment_data["status"] = f"{history['total_commits']} commits"
+                    # output.append(
+                    #     f"  https://github.com/{user}/{repo}/compare/{commit[:8]}...main"
+                    # )
 
-                    for i, commit_data in enumerate(history["commits"]):
-                        if len(commit_data["parents"]) > 1:
+                    commit_data = []
+                    for i, commit in enumerate(history["commits"]):
+                        if len(commit["parents"]) > 1:
                             # Skip merge commits
                             continue
 
-                        output.append(
-                            "  "
-                            + commit_data["sha"][:8]
-                            + " "
-                            + ("HEAD: " if i == 0 else "")
-                            + commit_data["commit"]["message"].splitlines()[0][:60]
-                            + " "
-                            + "("
-                            + (commit_data["author"] or {}).get("login", "?")[:10]
-                            + ")"
+                        commit_data.append(
+                            {
+                                "sha": commit["sha"],
+                                "is_head": i == 0,
+                                "message": commit["commit"]["message"].splitlines()[0],
+                                "author": (commit["author"] or {}).get("login", "?"),
+                            }
                         )
+                    environment_data["commits"] = commit_data
+                environments_data.append(environment_data)
+            service_data["environments"] = environments_data
+            data.append(service_data)
 
-                output.append("")
-            output.append("")
-
-        return render_template("system.html", system=system, output="\n".join(output))
+        return render_template("system.html", system=system, data=data)
 
     return app
