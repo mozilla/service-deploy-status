@@ -10,8 +10,14 @@ file.
 
 # Reporting issues
 
-See our issue tracker: TBD
+Issue tracker: https://github.com/mozilla/service-deploy-status/issues
 
 # Development
 
-TBD
+We use [just](https://just.systems), Docker, and git.
+
+After cloning the repository, do this to get a list of just recipes:
+
+``` shell
+> just list
+```
