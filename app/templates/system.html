@@ -2,5 +2,34 @@
 {% block title %}Service deploy status: {{ system }}{% endblock %}
 {% block body %}
 <h1>System: {{ system }}</h1>
-<pre>{{ output }}</pre>
+{% for service in data %}
+  <h2>{{ service["name"] }}: {{ service["description"] }}</h2>
+  {% for env in service["environments"] %}
+    <div>
+      <p>
+        {{ env["name"] }}: <a href="{{ env["host"] }}">{{ env["host"] }}</a>
+        <br />
+        <a href="{{ env["source"] }}/commit/{{ env["commit"] }}">{{ env["commit"] }}</a> | {{ env["tag"] }}
+        <br />
+        status: {{ env["status"] }}
+      </p>
+      {% if env["commits"] %}
+        <table>
+          {% for commit in env["commits"] %}
+            <tr>
+              <td><a href="{{ env["source"] }}/commit/{{ commit["sha"] }}">{{ commit["sha"] }}</a></td>
+              <td>
+                {% if commit["is_head"] %}HEAD {% endif %}
+                {{ commit["message"][:60] }}
+              </td>
+              <td>
+                {{ commit["author"][:60] }}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endfor %}
 {% endblock %}

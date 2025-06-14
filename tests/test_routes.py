@@ -183,10 +183,22 @@ def test_system_page(client, responses, fake_systems_data):
     # It produces a lot of output, so we're going to test for the existence of some
     # strings and then call it a day.
     for expected_string in [
-        b"service1  aaaaa12345  main\n  status: up-to-date",
-        b"service1  bbbbb12345  v2025.06.10\n  status: 2 commits",
-        b"ee46327e HEAD: chore: updated csp dependency (willkg)",
-        b"ddb3277c chore: update README (willkg)",
+        (
+            b'stage: <a href="http://service1-stage.example.com">'
+            + b"http://service1-stage.example.com</a>"
+        ),
+        (
+            b'<a href="https://github.com/example/service1/commit/aaaaa12345">'
+            + b"aaaaa12345</a> | main"
+        ),
+        b"status: up-to-date",
+        b"status: 2 commits",
+        (
+            b'<a href="https://github.com/example/service1/commit/'
+            + b'ee46327ef8dc59347749b06c60aed07730ed58aa">'
+            + b"ee46327ef8dc59347749b06c60aed07730ed58aa</a>"
+        ),
+        b"chore: updated csp dependency",
     ]:
         assert expected_string in resp.data
 
