@@ -15,12 +15,14 @@ structure:
 
 ```
 systems:
-  SYSTEM NAME:                           - the name of the system of services
-    - name: SERVICE NAME                 - the name of a single service in the system
-      description: SERVICE DESCRIPTION   - short description of service
-      environments:
-        - name: ENVIRONMENT NAME         - name of an environment
-          host: ENVIRONMENT HOST         - host for this environment with a /__version__
+  SYSTEM NAME:                             - the name of the system of services
+    services:
+      - name: SERVICE NAME                 - the name of a single service in the system
+        description: SERVICE DESCRIPTION   - short description of service
+        environments:
+          - name: ENVIRONMENT NAME         - name of an environment
+            host: ENVIRONMENT HOST         - host for this environment with a /__version__
 ```
+
 If you want to add a system or update an existing system, submit a pull
 request.
