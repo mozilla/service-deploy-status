@@ -17,8 +17,8 @@ run: _env build
     docker compose up --watch web
 
 # Run a shell in the Docker web image
-shell: _env build
-    docker compose run --rm web shell
+shell *args: _env build
+    docker compose run --rm web shell {{args}}
 
 # Run tests
 test: _env build
