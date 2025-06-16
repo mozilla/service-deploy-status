@@ -1,51 +1,53 @@
 ---
 systems:
   symbols:
-    - name: Tecken
-      description: "Mozilla Symbols Server"
-      environments:
-        - name: stage
-          host: "https://tecken-stage.symbols.nonprod.webservices.mozgcp.net"
-        - name: prod
-          host: "https://symbols.mozilla.org"
+    services:
+      - name: Tecken
+        description: "Mozilla Symbols Server"
+        environments:
+          - name: stage
+            host: "https://tecken-stage.symbols.nonprod.webservices.mozgcp.net"
+          - name: prod
+            host: "https://symbols.mozilla.org"
 
-    - name: Eliot
-      description: "Mozilla Symbolication Service"
-      environments:
-        - name: stage
-          host: "https://eliot-stage.symbols.nonprod.webservices.mozgcp.net"
-        - name: prod
-          host: "https://symbolication.services.mozilla.com"
+      - name: Eliot
+        description: "Mozilla Symbolication Service"
+        environments:
+          - name: stage
+            host: "https://eliot-stage.symbols.nonprod.webservices.mozgcp.net"
+          - name: prod
+            host: "https://symbolication.services.mozilla.com"
 
   socorro:
-    - name: Antenna
-      description: "Crash ingestion pipeline collector"
-      environments:
-        - name: stage
-          host: "https://crash-reports.allizom.org"
-        - name: prod
-          host: "https://crash-reports.mozilla.com"
+    services:
+      - name: Antenna
+        description: "Crash ingestion pipeline collector"
+        environments:
+          - name: stage
+            host: "https://crash-reports.allizom.org"
+          - name: prod
+            host: "https://crash-reports.mozilla.com"
 
-    - name: Socorro
-      description: "Crash ingestion pipeline and Crash Stats"
-      environments:
-        - name: stage
-          host: "https://crash-stats.allizom.org"
-        - name: prod
-          host: "https://crash-stats.mozilla.org"
-
+      - name: Socorro
+        description: "Crash ingestion pipeline and Crash Stats"
+        environments:
+          - name: stage
+            host: "https://crash-stats.allizom.org"
+          - name: prod
+            host: "https://crash-stats.mozilla.org"
 
   cloud-eng:
-    - name: mzcld-demo
-      description: "MozCloud demo"
-      environments:
-        - name: stage
-          host: "https://stage.mzcld-demo.nonprod.webservices.mozgcp.net"
-        - name: prod
-          host: "https://prod.mzcld-demo.prod.webservices.mozgcp.net"
+    services:
+      - name: mzcld-demo
+        description: "MozCloud demo"
+        environments:
+          - name: stage
+            host: "https://stage.mzcld-demo.nonprod.webservices.mozgcp.net"
+          - name: prod
+            host: "https://prod.mzcld-demo.prod.webservices.mozgcp.net"
 
-    - name: o11y-demo
-      description: "o11y demo"
-      environments:
-        - name: dev
-          host: "https://dev.o11y-demo.nonprod.sandbox.mozgcp.net/"
+      - name: o11y-demo
+        description: "o11y demo"
+        environments:
+          - name: dev
+            host: "https://dev.o11y-demo.nonprod.sandbox.mozgcp.net/"

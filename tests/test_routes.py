@@ -7,6 +7,7 @@ import json
 import pytest
 
 from app import main
+from app.libsystems import Systems
 
 
 def test_index_page(client, caplog):
@@ -70,25 +71,29 @@ def test_dockerflow_version(client):
 @pytest.fixture()
 def fake_systems_data(monkeypatch, responses):
     def get_systems_data_mock():
-        return {
-            "systems": {
-                "exampleapp": [
-                    {
-                        "name": "Service 1",
-                        "environments": [
+        return Systems.model_validate(
+            {
+                "systems": {
+                    "exampleapp": {
+                        "services": [
                             {
-                                "name": "stage",
-                                "host": "http://service1-stage.example.com",
-                            },
-                            {
-                                "name": "prod",
-                                "host": "http://service1.example.com",
+                                "name": "Service 1",
+                                "environments": [
+                                    {
+                                        "name": "stage",
+                                        "host": "http://service1-stage.example.com",
+                                    },
+                                    {
+                                        "name": "prod",
+                                        "host": "http://service1.example.com",
+                                    },
+                                ],
                             },
                         ],
                     },
-                ],
+                },
             }
-        }
+        )
 
     monkeypatch.setattr(main, "get_systems_data", get_systems_data_mock)
 
