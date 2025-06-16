@@ -11,8 +11,8 @@ import time
 from urllib.parse import urlparse
 
 from flask import abort, Flask, jsonify, render_template
-import yaml
 
+from app.libsystems import get_systems_data
 from app.observability import log_settings, setup_logging
 from app.settings import settings
 
@@ -65,15 +65,6 @@ def log_render_time(fun):
             )
 
     return _log_render_time
-
-
-@functools.cache
-def get_systems_data():
-    # NOTE(willkg): relative to repository root
-    with open("app/systems.yaml", "rb") as fp:
-        data = yaml.safe_load(fp)
-
-    return data
 
 
 @functools.cache
@@ -132,31 +123,31 @@ def create_app(settings_overrides=None):
     @log_render_time
     def index_page():
         systems_data = get_systems_data()
-        systems = list(sorted(systems_data["systems"].keys()))
+        systems = list(sorted(systems_data.systems.keys()))
         return render_template("index.html", systems=systems)
 
     @app.route("/system/<system>", methods=["GET"])
     @log_render_time
     def system_page(system):
         systems_data = get_systems_data()
-        if system not in systems_data["systems"]:
+        if system not in systems_data.systems:
             abort(404)
 
         data = []
-        for service in systems_data["systems"][system]:
+        for service in systems_data.systems[system].services:
             service_data = {
-                "name": service["name"],
-                "description": service.get("description", "--"),
+                "name": service.name,
+                "description": service.description or "--",
             }
 
             environments_data = []
-            for environment in service["environments"]:
+            for environment in service.environments:
                 environment_data = {
-                    "name": environment["name"],
-                    "host": environment["host"],
+                    "name": environment.name,
+                    "host": environment.host,
                 }
 
-                host_version = fetch(f"{environment['host']}/__version__")
+                host_version = fetch(f"{environment.host}/__version__")
                 environment_data["commit"] = host_version["commit"]
                 environment_data["source"] = host_version["source"]
                 environment_data["tag"] = host_version.get("version") or "(none)"
