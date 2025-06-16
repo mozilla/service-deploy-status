@@ -3,6 +3,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import functools
+import json
 
 from pydantic import BaseModel
 import yaml
@@ -34,3 +35,7 @@ def get_systems_data():
         data = yaml.safe_load(fp)
 
     return Systems.model_validate(data)
+
+
+def print_schema():
+    print(json.dumps(Systems.model_json_schema(), indent=2))
