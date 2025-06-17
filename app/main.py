@@ -193,9 +193,9 @@ def create_app(settings_overrides=None):
 
         return render_template("system.html", system=system, data=data)
 
-    return app
-
     @app.route("/throw_error", methods=["GET"])
     @log_render_time
     def throw_error_page():
         raise Exception("Intentional unhandled exception")
+
+    return app
