@@ -1,18 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename="bootstrap-5.3.7-dist/bootstrap.min.css") }}">
+    <script src="{{ url_for('static', filename="bootstrap-5.3.7-dist/bootstrap.bundle.min.js") }}"></script>
+
     <title>{% block title %}TITLE{% endblock %}</title>
   </head>
   <body>
-<p>
-  [
-  <a href="{{ url_for('index_page') }}">Service Deploy Status</a> |
-  o11y demo |
-  <a href="https://github.com/mozilla/service-deploy-status">Source code</a> |
-  <a href="https://github.com/mozilla/service-deploy-status/issues">Issues</a>
-  ]
-</p>
+<div class="container">
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">Service Deploy Status</span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('index_page') }}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/mozilla/service-deploy-status">Source code</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/mozilla/service-deploy-status/issues">Issues</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+{% block breadcrumbs %}
+{% endblock %}
 {% block body %}
 {% endblock %}
+</div>
   </body>
 </html>

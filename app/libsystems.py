@@ -23,6 +23,9 @@ class Service(BaseModel):
 class System(BaseModel):
     services: list[Service]
 
+    def __len__(self):
+        return len(self.services)
+
 
 class Systems(BaseModel):
     systems: dict[str, System]

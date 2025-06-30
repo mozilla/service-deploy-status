@@ -1,32 +1,70 @@
 {% extends "base.html" %}
 {% block title %}Service deploy status: {{ system }}{% endblock %}
+{% block breadcrumbs %}
+  <nav class="py-1" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page">
+        <a href="{{ url_for('index_page') }}">Home</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ system }}
+      </li>
+    </ol>
+  </nav>
+{% endblock %}
 {% block body %}
 <h1>System: {{ system }}</h1>
 {% for service in data %}
-  <h2>{{ service["name"] }}: {{ service["description"] }}</h2>
+  <h2 class="bg-primary-subtle p-2">{{ service["name"] }}: {{ service["description"] }}</h2>
   {% for env in service["environments"] %}
-    <div>
-      <p>
-        {{ env["name"] }}: <a href="{{ env["host"] }}">{{ env["host"] }}</a>
-        <br />
-        <a href="{{ env["source"] }}/commit/{{ env["commit"] }}">{{ env["commit"] }}</a> | {{ env["tag"] }}
-        <br />
-        status: {{ env["status"] }}
-      </p>
+    <h3 class="p-2">{{ env["name"] }}</h3>
+    <div class="container m-3">
+      <dl class="row">
+        <dt class="col-sm-2">environment</dt>
+        <dd class="col-sm-10">{{ env["name"] }}</dd>
+
+        <dt class="col-sm-2">host</dt>
+        <dd class="col-sm-10"><a href="{{ env["host"] }}">{{ env["host"] }}</a></dd>
+
+        <dt class="col-sm-2">currently deployed</dt>
+        <dd class="col-sm-10">
+          <a href="{{ env["source"] }}/commit/{{ env["commit"] }}">{{ env["commit"] }}</a> | {{ env["tag"] }}
+        </dd>
+
+        <dt class="col-sm-2">status</dt>
+        <dd class="col-sm-10">
+          <span class="badge text-bg-{% if env["status"] == "up-to-date" %}success{% else %}warning {% endif %}">
+            {{ env["status"] }}
+          </span>
+        </dd>
+      </dl>
       {% if env["commits"] %}
-        <table>
-          {% for commit in env["commits"] %}
+        <table class="table table-hover">
+          <thead>
             <tr>
-              <td><a href="{{ env["source"] }}/commit/{{ commit["sha"] }}">{{ commit["sha"] }}</a></td>
-              <td>
-                {% if commit["is_head"] %}HEAD {% endif %}
-                {{ commit["message"][:60] }}
-              </td>
-              <td>
-                {{ commit["author"][:60] }}
-              </td>
+              <th scope="col">commit</th>
+              <th scope="col">message</th>
+              <th scope="col">author</th>
             </tr>
-          {% endfor %}
+          </thead>
+          <tbody>
+            {% for commit in env["commits"] %}
+              <tr>
+                <td>
+                  <a href="{{ env["source"] }}/commit/{{ commit["sha"] }}">{{ commit["sha"] }}</a>
+                  {% if commit["is_head"] %}
+                    <span class="badge text-bg-primary">HEAD</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {{ commit["message"][:60] }}
+                </td>
+                <td>
+                  {{ commit["author"][:60] }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
         </table>
       {% endif %}
     </div>
