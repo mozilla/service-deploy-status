@@ -189,15 +189,15 @@ def test_system_page(client, responses, fake_systems_data):
     # strings and then call it a day.
     for expected_string in [
         (
-            b'stage: <a href="http://service1-stage.example.com">'
+            b'<a href="http://service1-stage.example.com">'
             + b"http://service1-stage.example.com</a>"
         ),
         (
             b'<a href="https://github.com/example/service1/commit/aaaaa12345">'
             + b"aaaaa12345</a> | main"
         ),
-        b"status: up-to-date",
-        b"status: 2 commits",
+        b"up-to-date",
+        b"2 commits",
         (
             b'<a href="https://github.com/example/service1/commit/'
             + b'ee46327ef8dc59347749b06c60aed07730ed58aa">'

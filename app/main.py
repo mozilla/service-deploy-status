@@ -123,7 +123,9 @@ def create_app(settings_overrides=None):
     @log_render_time
     def index_page():
         systems_data = get_systems_data()
-        systems = list(sorted(systems_data.systems.keys()))
+        systems = list(
+            sorted([(key, len(val)) for key, val in systems_data.systems.items()])
+        )
         return render_template("index.html", systems=systems)
 
     @app.route("/system/<system>", methods=["GET"])
