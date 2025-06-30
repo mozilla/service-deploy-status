@@ -10,7 +10,13 @@ import requests
 import time
 from urllib.parse import urlparse
 
-from flask import abort, Flask, jsonify, render_template
+from flask import (
+    abort,
+    Flask,
+    jsonify,
+    render_template,
+    send_from_directory,
+)
 
 from app.libsystems import get_systems_data
 from app.observability import log_settings, setup_logging
@@ -199,5 +205,13 @@ def create_app(settings_overrides=None):
     @log_render_time
     def throw_error_page():
         raise Exception("Intentional unhandled exception")
+
+    @app.route("/favicon.ico")
+    def favicon():
+        return send_from_directory(
+            os.path.join(app.root_path, "static"),
+            "favicon.ico",
+            mimetype="image/vnd.microsoft.icon",
+        )
 
     return app
