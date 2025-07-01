@@ -12,16 +12,14 @@ on:
       - main
 
 env:
-  # This is a service-deploy-status service that's being used for the o11y-demo
-  # project. If we want to use this service for other demos, we'll need to
-  # rethink this part. Maybe push to a general GAR target and have all deploys
-  # for tenants trigger on that. Or maybe push to multiple GAR targets--one for
-  # each tenant.
-  IMAGE_NAME: service-deploy-status
+  # NOTE(willkg): This is a service-deploy-status service that's being used for
+  # the o11y-demo project. If we want to use this service for other demos,
+  # we'll need to push to multiple GAR paths.
+  SOURCE_IMAGE_NAME: service-deploy-status
   # NOTE(willkg): service-deploy-status is deployed in the o11y-demo tenant in
   # sandbox which only has nonprod
   GCP_PROJECT_ID: moz-fx-o11y-demo-nonprod
-  IMAGE_REPO_PATH: moz-fx-o11y-demo-nonprod/o11y-demo-nonprod/o11y-demo
+  GAR_IMAGE_PATH: us-docker.pkg.dev/moz-fx-o11y-demo-nonprod/o11y-demo-nonprod/o11y-demo
 
 jobs:
   build-test-push:
@@ -63,12 +61,14 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           echo IMAGE_TAG="$GITHUB_REF_NAME" >> "$GITHUB_ENV"
+      - name: Tag image
+        if: env.IMAGE_TAG != ''
+        run: |
+          docker tag ${{ env.SOURCE_IMAGE_NAME }} ${{ env.GAR_IMAGE_PATH }}:${{ env.IMAGE_TAG }}
       - name: Push Docker image to GAR
         if: env.IMAGE_TAG != ''
         uses: mozilla-it/deploy-actions/docker-push@v4.0.0
         with:
-          local_image: ${{ env.IMAGE_NAME }}
-          image_repo_path: ${{ env.IMAGE_REPO_PATH }}
-          image_tag: ${{ env.IMAGE_TAG }}
-          workload_identity_pool_project_number: ${{ vars.GCPV2_WORKLOAD_IDENTITY_POOL_PROJECT_NUMBER }}
+          image_tags: ${{ env.GAR_IMAGE_PATH }}:${{ env.IMAGE_TAG }}
           project_id: ${{ env.GCP_PROJECT_ID }}
+          workload_identity_pool_project_number: ${{ vars.GCPV2_WORKLOAD_IDENTITY_POOL_PROJECT_NUMBER }}
