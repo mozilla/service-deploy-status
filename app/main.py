@@ -24,6 +24,7 @@ from app.observability import log_settings, setup_logging
 from app.settings import settings
 
 
+@stamina.retry(on=httpx.HTTPError, attempts=3)
 def fetch(url):
     resp = httpx.get(url)
     # FIXME(willkg): handle 429s, retrying, and other response codes
@@ -139,6 +140,9 @@ def create_app(settings_overrides=None):
     @app.route("/system/<system>", methods=["GET"])
     @log_render_time
     def system_page(system):
+        def on_error(system, msg):
+            return render_template("system_error.html", system=system, msg=msg)
+
         systems_data = get_systems_data()
         if system not in systems_data.systems:
             abort(404)
@@ -157,7 +161,11 @@ def create_app(settings_overrides=None):
                     "host": environment.host,
                 }
 
-                host_version = fetch(f"{environment.host}/__version__")
+                try:
+                    host_version = fetch(f"{environment.host}/__version__")
+                except httpx.HTTPError as httpx_exc:
+                    return on_error(system=system, msg=str(httpx_exc))
+
                 environment_data["commit"] = host_version["commit"]
                 environment_data["source"] = host_version["source"]
                 environment_data["tag"] = host_version.get("version") or "(none)"
@@ -167,11 +175,15 @@ def create_app(settings_overrides=None):
                 environment_data["user"] = user
                 environment_data["repo"] = repo
 
-                history = fetch_history_from_github(
-                    user=user,
-                    repo=repo,
-                    from_sha=environment_data["commit"],
-                )
+                try:
+                    history = fetch_history_from_github(
+                        user=user,
+                        repo=repo,
+                        from_sha=environment_data["commit"],
+                    )
+                except httpx.HTTPError as httpx_exc:
+                    return on_error(system=system, msg=str(httpx_exc))
+
                 if history["total_commits"] == 0:
                     environment_data["status"] = "up-to-date"
                     environment_data["commits"] = []
