@@ -6,7 +6,6 @@ import functools
 import json
 import logging
 import os
-import requests
 import time
 from urllib.parse import urlparse
 
@@ -17,6 +16,8 @@ from flask import (
     render_template,
     send_from_directory,
 )
+import httpx
+import stamina
 
 from app.libsystems import get_systems_data
 from app.observability import log_settings, setup_logging
@@ -24,16 +25,17 @@ from app.settings import settings
 
 
 def fetch(url):
-    resp = requests.get(url)
+    resp = httpx.get(url)
     # FIXME(willkg): handle 429s, retrying, and other response codes
     resp.raise_for_status()
     return resp.json()
 
 
+@functools.lru_cache
+@stamina.retry(on=httpx.HTTPError, attempts=3)
 def fetch_history_from_github(user, repo, from_sha):
     url = f"https://api.github.com/repos/{user}/{repo}/compare/{from_sha}...main"
-    resp = requests.get(url)
-    # FIXME(willkg): handle 429s, retrying, and other response codes
+    resp = httpx.get(url)
     resp.raise_for_status()
     return resp.json()
 
@@ -105,7 +107,7 @@ def create_app(settings_overrides=None):
     @log_render_time
     def dockerflow_heartbeat():
         # Check GitHub status and return whether GitHub is up or not
-        resp = requests.get("https://www.githubstatus.com/api/v2/status.json")
+        resp = httpx.get("https://www.githubstatus.com/api/v2/status.json")
         if resp.status_code != 200:
             return jsonify({"github": resp.status_code}), 500
         data = resp.json()
