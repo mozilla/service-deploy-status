@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Service deploy status: {{ system }} -- error{% endblock %}
+{% block breadcrumbs %}
+  <nav class="py-1" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page">
+        <a href="{{ url_for('index_page') }}">Home</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ system }}
+      </li>
+    </ol>
+  </nav>
+{% endblock %}
+{% block body %}
+<h1>System: {{ system }}</h1>
+<p>
+  Error: {{ msg }}
+</p>
+<p>
+  Depending on the error, please try again in a few minutes.
+</p>
+{% endblock %}
