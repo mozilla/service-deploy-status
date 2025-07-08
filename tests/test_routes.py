@@ -26,26 +26,24 @@ def test_index_page(client, caplog):
     assert len(records) == 1
 
 
-def test_dockerflow_heartbeat(client, responses):
-    responses.get(
-        "https://www.githubstatus.com/api/v2/status.json",
-        status=200,
-        content_type="application/json; charset-utf-8",
-        body=json.dumps(
-            {
-                "page": {
-                    "id": "kctbh9vrtdwd",
-                    "name": "GitHub",
-                    "url": "https://www.githubstatus.com",
-                    "time_zone": "Etc/UTC",
-                    "updated_at": "2025-06-10T18:23:50.967Z",
-                },
-                "status": {
-                    "indicator": "none",
-                    "description": "All Systems Operational",
-                },
-            }
-        ),
+def test_dockerflow_heartbeat(client, httpx_mock):
+    httpx_mock.add_response(
+        method="GET",
+        url="https://www.githubstatus.com/api/v2/status.json",
+        status_code=200,
+        json={
+            "page": {
+                "id": "kctbh9vrtdwd",
+                "name": "GitHub",
+                "url": "https://www.githubstatus.com",
+                "time_zone": "Etc/UTC",
+                "updated_at": "2025-06-10T18:23:50.967Z",
+            },
+            "status": {
+                "indicator": "none",
+                "description": "All Systems Operational",
+            },
+        },
     )
 
     resp = client.get("/__heartbeat__")
@@ -69,7 +67,7 @@ def test_dockerflow_version(client):
 
 
 @pytest.fixture()
-def fake_systems_data(monkeypatch, responses):
+def fake_systems_data(monkeypatch, httpx_mock):
     def get_systems_data_mock():
         return Systems.model_validate(
             {
@@ -98,90 +96,82 @@ def fake_systems_data(monkeypatch, responses):
     monkeypatch.setattr(main, "get_systems_data", get_systems_data_mock)
 
     # Stage is up-to-date
-    responses.get(
-        "http://service1-stage.example.com/__version__",
-        status=200,
-        content_type="application/json; charset-utf-8",
-        body=json.dumps(
-            {
-                "source": "https://github.com/example/service1",
-                "version": "main",
-                "commit": "aaaaa12345",
-                "build": "https://github.com/example/service1/actions/runs/15888888542",
-            }
-        ),
+    httpx_mock.add_response(
+        method="GET",
+        url="http://service1-stage.example.com/__version__",
+        status_code=200,
+        json={
+            "source": "https://github.com/example/service1",
+            "version": "main",
+            "commit": "aaaaa12345",
+            "build": "https://github.com/example/service1/actions/runs/15888888542",
+        },
     )
-    responses.get(
-        "https://api.github.com/repos/example/service1/compare/aaaaa12345...main",
-        status=200,
-        content_type="application/json",
-        body=json.dumps(
-            {
-                "total_commits": 0,
-            }
-        ),
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.github.com/repos/example/service1/compare/aaaaa12345...main",
+        status_code=200,
+        json={
+            "total_commits": 0,
+        },
     )
 
     # Prod is a couple of commits behind
-    responses.get(
-        "http://service1.example.com/__version__",
-        status=200,
-        content_type="application/json",
-        body=json.dumps(
-            {
-                "source": "https://github.com/example/service1",
-                "version": "v2025.06.10",
-                "commit": "bbbbb12345",
-                "build": "https://github.com/example/service1/actions/runs/15555555542",
-            }
-        ),
+    httpx_mock.add_response(
+        method="GET",
+        url="http://service1.example.com/__version__",
+        status_code=200,
+        json={
+            "source": "https://github.com/example/service1",
+            "version": "v2025.06.10",
+            "commit": "bbbbb12345",
+            "build": "https://github.com/example/service1/actions/runs/15555555542",
+        },
     )
-    responses.get(
-        "https://api.github.com/repos/example/service1/compare/bbbbb12345...main",
-        status=200,
-        content_type="application/json",
-        body=json.dumps(
-            {
-                "total_commits": 2,
-                "commits": [
-                    {
-                        "sha": "ee46327ef8dc59347749b06c60aed07730ed58aa",
-                        "parents": [
-                            # NOTE(willkg): service-deploy-status only looks at the
-                            # number of parents--it doesn't look at the data
-                            {},
-                        ],
-                        "commit": {
-                            "message": (
-                                "chore: updated csp dependency\n\n"
-                                "This version of csp fixes bug 111111."
-                            ),
-                        },
-                        "author": {
-                            "login": "willkg",
-                        },
+    httpx_mock.add_response(
+        method="GET",
+        url="https://api.github.com/repos/example/service1/compare/bbbbb12345...main",
+        status_code=200,
+        json={
+            "total_commits": 2,
+            "commits": [
+                {
+                    "sha": "ee46327ef8dc59347749b06c60aed07730ed58aa",
+                    "parents": [
+                        # NOTE(willkg): service-deploy-status only looks at the number
+                        # of parents--it doesn't look at the data
+                        {},
+                    ],
+                    "commit": {
+                        "message": (
+                            "chore: updated csp dependency\n\n"
+                            "This version of csp fixes bug 111111."
+                        ),
                     },
-                    {
-                        "sha": "ddb3277c7e6365ac28c61cef8f25c3e295e6329a",
-                        "parents": [
-                            # NOTE(willkg): service-deploy-status only looks at the
-                            # number of parents--it doesn't look at the data
-                            {},
-                        ],
-                        "commit": {
-                            "message": "chore: update README",
-                        },
-                        "author": {
-                            "login": "willkg",
-                        },
+                    "author": {
+                        "login": "willkg",
                     },
-                ],
-            }
-        ),
+                },
+                {
+                    "sha": "ddb3277c7e6365ac28c61cef8f25c3e295e6329a",
+                    "parents": [
+                        # NOTE(willkg): service-deploy-status only looks at the number
+                        # of parents--it doesn't look at the data
+                        {},
+                    ],
+                    "commit": {
+                        "message": "chore: update README",
+                    },
+                    "author": {
+                        "login": "willkg",
+                    },
+                },
+            ],
+        },
     )
 
 
-def test_system_page(client, responses, fake_systems_data):
+def test_system_page(client, httpx_mock, fake_systems_data):
     resp = client.get("/system/exampleapp")
     assert resp.status_code == 200
 
@@ -208,10 +198,10 @@ def test_system_page(client, responses, fake_systems_data):
         assert expected_string in resp.data
 
 
-def test_system_page_bad_system(client, responses, fake_systems_data, caplog):
+def test_system_page_bad_system(client, httpx_mock, fake_systems_data, caplog):
     # NOTE(willkg): we want to use the fake system data, but we don't want to enforce
     # that all responses are matched, so we remove the expected responses.
-    responses.reset()
+    httpx_mock.reset()
 
     resp = client.get("/system/badvalue")
     assert resp.status_code == 404
