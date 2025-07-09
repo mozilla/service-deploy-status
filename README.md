@@ -26,3 +26,33 @@ systems:
 
 If you want to add a system or update an existing system, submit a pull
 request.
+
+# development
+
+Run `just` to list justfile recipes.
+
+`just build` -- builds the service-deploy-status docker image
+
+`just format` -- formats Python code
+
+`just lint` -- lints Python code
+
+`just test` -- runs Python tests
+
+`just run` -- runs the service-deploy-status service in your local dev
+environment
+
+`just loadtest` -- runs the load tests against a service-deploy-status service
+running in your local dev environment
+
+To run load tests against the service running somewhere else, do:
+
+```
+docker run --rm -i \
+    --volume $(pwd)/k6-scripts:/scripts \
+    loadimpact/k6 run \
+    --vus 2 \                                # <-- change number of virtual users here
+    --duration 20s \                         # <-- change duration in seconds here
+    --env BASEURL=http://web:8000 \          # <-- change the baseurl here
+    /scripts/script.js
+```

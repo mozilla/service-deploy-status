@@ -40,3 +40,15 @@ list-outdated: _env build
 # Update uv.lock file
 update-lock: _env build
     docker compose run --rm --no-deps --volume=.:/app web shell uv lock --upgrade
+
+# Run k6 loadtest
+loadtest: _env
+    # docker compose run --rm loadtest run --vus 2 --duration 20s loadtest/script.js
+    docker run --rm -i \
+        --network service-deploy-status_default \
+        --volume $(pwd)/k6-scripts:/scripts \
+        loadimpact/k6 run \
+        --vus 2 \
+        --duration 20s \
+        --env BASEURL=http://web:8000 \
+        /scripts/script.js

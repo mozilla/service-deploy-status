@@ -1,12 +1,12 @@
 ---
 services:
   web:
-    image: service-deploy-status
     build:
       dockerfile: Dockerfile
       args:
         userid: ${USE_UID:-10001}
         groupid: ${USE_GID:-10001}
+    image: service-deploy-status
     environment:
       APP_OTEL_COLLECTOR_ENDPOINT: otel-collector:4317
       APP_ENVIRONMENT: local
