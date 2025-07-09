@@ -1,0 +1,22 @@
+[
+  {
+    "path": "/system/symbols",
+    "percent": 70
+  },
+  {
+    "path": "/system/socorro",
+    "percent": 70
+  },
+  {
+    "path": "/system/cloud-eng",
+    "percent": 70
+  },
+  {
+    "path": "/",
+    "percent": 100
+  },
+  {
+    "path": "/throw_error",
+    "percent": 5
+  }
+]
