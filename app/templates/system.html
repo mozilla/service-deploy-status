@@ -14,6 +14,32 @@
 {% endblock %}
 {% block body %}
 <h1>System: {{ system }}</h1>
+<h2>Overview</h2>
+<div class="container py-3 ">
+<table class="table table-hover w-auto">
+  <thead>
+    <tr>
+      <th scope="col">service/environment</th>
+      <th scope="col">status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for service in data %}
+      {% for env in service["environments"] %}
+        <tr>
+          <td>{{ service["name"] }} / {{ env["name"] }}</td>
+          <td>
+            <span class="badge text-bg-{% if env["status"] == "up-to-date" %}success{% else %}warning {% endif %}">
+              {{ env["status"] }}
+            </span>
+          </td>
+        </tr>
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
 {% for service in data %}
   <h2 class="bg-primary-subtle p-2">{{ service["name"] }}: {{ service["description"] }}</h2>
   {% for env in service["environments"] %}
@@ -39,7 +65,7 @@
         </dd>
       </dl>
       {% if env["commits"] %}
-        <table class="table table-hover">
+        <table class="table table-hover w-auto">
           <thead>
             <tr>
               <th scope="col">commit</th>

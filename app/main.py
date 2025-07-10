@@ -189,7 +189,9 @@ def create_app(settings_overrides=None):
                     environment_data["commits"] = []
 
                 else:
-                    environment_data["status"] = f"{history['total_commits']} commits"
+                    environment_data["status"] = (
+                        f"{history['total_commits']} commits behind"
+                    )
                     # output.append(
                     #     f"  https://github.com/{user}/{repo}/compare/{commit[:8]}...main"
                     # )
