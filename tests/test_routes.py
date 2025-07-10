@@ -26,11 +26,11 @@ def test_index_page(client, caplog):
     assert len(records) == 1
 
 
-def test_dockerflow_heartbeat(client, httpx_mock):
-    httpx_mock.add_response(
-        method="GET",
+def test_dockerflow_heartbeat(client, responses):
+    responses.get(
         url="https://www.githubstatus.com/api/v2/status.json",
-        status_code=200,
+        status=200,
+        content_type="application/json; charset-utf-8",
         json={
             "page": {
                 "id": "kctbh9vrtdwd",
@@ -67,7 +67,7 @@ def test_dockerflow_version(client):
 
 
 @pytest.fixture()
-def fake_systems_data(monkeypatch, httpx_mock):
+def fake_systems_data(monkeypatch, responses):
     def get_systems_data_mock():
         return Systems.model_validate(
             {
@@ -96,10 +96,10 @@ def fake_systems_data(monkeypatch, httpx_mock):
     monkeypatch.setattr(main, "get_systems_data", get_systems_data_mock)
 
     # Stage is up-to-date
-    httpx_mock.add_response(
-        method="GET",
+    responses.get(
         url="http://service1-stage.example.com/__version__",
-        status_code=200,
+        status=200,
+        content_type="application/json; charset-utf-8",
         json={
             "source": "https://github.com/example/service1",
             "version": "main",
@@ -107,20 +107,20 @@ def fake_systems_data(monkeypatch, httpx_mock):
             "build": "https://github.com/example/service1/actions/runs/15888888542",
         },
     )
-    httpx_mock.add_response(
-        method="GET",
+    responses.get(
         url="https://api.github.com/repos/example/service1/compare/aaaaa12345...main",
-        status_code=200,
+        status=200,
+        content_type="application/json",
         json={
             "total_commits": 0,
         },
     )
 
     # Prod is a couple of commits behind
-    httpx_mock.add_response(
-        method="GET",
+    responses.get(
         url="http://service1.example.com/__version__",
-        status_code=200,
+        status=200,
+        content_type="application/json; charset-utf-8",
         json={
             "source": "https://github.com/example/service1",
             "version": "v2025.06.10",
@@ -128,10 +128,10 @@ def fake_systems_data(monkeypatch, httpx_mock):
             "build": "https://github.com/example/service1/actions/runs/15555555542",
         },
     )
-    httpx_mock.add_response(
-        method="GET",
+    responses.get(
         url="https://api.github.com/repos/example/service1/compare/bbbbb12345...main",
-        status_code=200,
+        status=200,
+        content_type="application/json",
         json={
             "total_commits": 2,
             "commits": [
@@ -171,7 +171,7 @@ def fake_systems_data(monkeypatch, httpx_mock):
     )
 
 
-def test_system_page(client, httpx_mock, fake_systems_data):
+def test_system_page(client, responses, fake_systems_data):
     resp = client.get("/system/exampleapp")
     assert resp.status_code == 200
 
@@ -198,10 +198,10 @@ def test_system_page(client, httpx_mock, fake_systems_data):
         assert expected_string in resp.data
 
 
-def test_system_page_bad_system(client, httpx_mock, fake_systems_data, caplog):
+def test_system_page_bad_system(client, responses, fake_systems_data, caplog):
     # NOTE(willkg): we want to use the fake system data, but we don't want to enforce
     # that all responses are matched, so we remove the expected responses.
-    httpx_mock.reset()
+    responses.reset()
 
     resp = client.get("/system/badvalue")
     assert resp.status_code == 404
