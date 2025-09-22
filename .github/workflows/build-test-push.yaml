@@ -67,7 +67,7 @@ jobs:
           docker tag ${{ env.SOURCE_IMAGE_NAME }} ${{ env.GAR_IMAGE_PATH }}:${{ env.IMAGE_TAG }}
       - name: Push Docker image to GAR
         if: env.IMAGE_TAG != ''
-        uses: mozilla-it/deploy-actions/docker-push@v4.0.0
+        uses: mozilla-it/deploy-actions/docker-push@v4.4.0
         with:
           image_tags: ${{ env.GAR_IMAGE_PATH }}:${{ env.IMAGE_TAG }}
           project_id: ${{ env.GCP_PROJECT_ID }}
