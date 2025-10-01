@@ -16,6 +16,6 @@ dependencies = [
     "pyyaml>=6.0.2",
     "requests>=2.32.4",
     "responses>=0.25.7",
-    "ruff~=0.12.1",
+    "ruff~=0.13.2",
     "stamina>=25.1.0",
 ]
