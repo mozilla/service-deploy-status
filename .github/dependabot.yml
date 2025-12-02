@@ -5,12 +5,16 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7
     rebase-strategy: "disabled"
 
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7
     rebase-strategy: "disabled"
     ignore:
       - dependency-name: python
@@ -20,4 +24,6 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    cooldown:
+      default-days: 7
     rebase-strategy: "disabled"
