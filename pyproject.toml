@@ -8,7 +8,6 @@ requires-python = ">=3.12"
 dependencies = [
     "dockerflow~=2024.4.2",
     "flask~=3.1.1",
-    "gunicorn~=23.0.0",
     "pydantic~=2.12.3",
     "pydantic-settings~=2.12.0",
     "pytest~=9.0.1",
@@ -18,4 +17,5 @@ dependencies = [
     "responses>=0.25.7",
     "ruff~=0.14.3",
     "stamina>=25.1.0",
+    "waitress>=3.0.2",
 ]

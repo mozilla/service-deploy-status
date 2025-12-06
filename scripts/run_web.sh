@@ -6,20 +6,15 @@
 
 # Default variables
 : "${PORT:=8000}"
-: "${APP_GUNICORN_WORKERS:=1}"
 : "${APP_GUNICORN_TIMEOUT:=300}"
-: "${APP_GUNICORN_MAX_REQUESTS:=0}"
-: "${APP_GUNICORN_MAX_REQUESTS_JITTER:=0}"
+: "${APP_WAITRESS_TIMEOUT:=300}"
 
-(set -o posix; set) | grep APP_GUNICORN
+(set -o posix; set) | grep APP_WAITRESS
 
 cd /app/
 
-exec uv run gunicorn \
-    --bind 0.0.0.0:"${PORT}" \
-    --timeout "${APP_GUNICORN_TIMEOUT}" \
-    --workers "${APP_GUNICORN_WORKERS}" \
-    --max-requests="${APP_GUNICORN_MAX_REQUESTS}" \
-    --max-requests-jitter="${APP_GUNICORN_MAX_REQUESTS_JITTER}" \
-    --access-logfile - \
+exec uv run waitress-serve \
+    --port=${PORT} \
+    --threads=1 \
+    --channel-timeout="${APP_WAITRESS_TIMEOUT}" \
     app.wsgi:wsgi_app
