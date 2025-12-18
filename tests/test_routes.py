@@ -213,3 +213,19 @@ def test_system_page_bad_system(client, responses, fake_systems_data, caplog):
         if record.message.startswith("system_page (404) render time")
     ]
     assert len(records) == 1
+
+
+def test_cpu_intensive_page(client):
+    resp = client.get("/cpu_intensive")
+    assert resp.status_code == 200
+    assert resp.data == (
+        b'{"msg":"e0a1dbe08e272254494da69a46a7a42f55d4f2b96a7b1a90d29529e2b81cad7e"}\n'
+    )
+
+
+def test_cpu_intensive_page_with_text(client):
+    resp = client.get("/cpu_intensive", query_string={"text": "this is a test!"})
+    assert resp.status_code == 200
+    assert resp.data == (
+        b'{"msg":"b6dcc3fe026cba73e9e930be854ce13038fef437549b3eed0e67505ec67f8667"}\n'
+    )

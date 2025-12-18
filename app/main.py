@@ -3,9 +3,11 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import functools
+import hashlib
 import json
 import logging
 import os
+import string
 import time
 from urllib.parse import urlparse
 
@@ -14,6 +16,7 @@ from flask import (
     Flask,
     jsonify,
     render_template,
+    request,
     send_from_directory,
 )
 import requests
@@ -223,6 +226,14 @@ def create_app(settings_overrides=None):
     @log_render_time
     def throw_error_page():
         raise Exception("Intentional unhandled exception")
+
+    @app.route("/cpu_intensive", methods=["GET"])
+    @log_render_time
+    def cpu_intensive_page():
+        msg = request.args.get("text", string.ascii_letters)[:200]
+        for i in range(10_000_000):
+            msg = hashlib.sha256(msg.encode("utf-8")).hexdigest()
+        return jsonify({"msg": msg}), 200
 
     @app.route("/favicon.ico")
     def favicon():
