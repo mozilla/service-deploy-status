@@ -231,7 +231,7 @@ def create_app(settings_overrides=None):
     @log_render_time
     def cpu_intensive_page():
         msg = request.args.get("text", string.ascii_letters)[:200]
-        for i in range(10_000_000):
+        for i in range(500_000):
             msg = hashlib.sha256(msg.encode("utf-8")).hexdigest()
         return jsonify({"msg": msg}), 200
 
