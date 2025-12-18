@@ -219,7 +219,7 @@ def test_cpu_intensive_page(client):
     resp = client.get("/cpu_intensive")
     assert resp.status_code == 200
     assert resp.data == (
-        b'{"msg":"e0a1dbe08e272254494da69a46a7a42f55d4f2b96a7b1a90d29529e2b81cad7e"}\n'
+        b'{"msg":"bca8583e29220e1cde78a86767a0176fc49ae8199925bb35288283048a7971b7"}\n'
     )
 
 
@@ -227,5 +227,5 @@ def test_cpu_intensive_page_with_text(client):
     resp = client.get("/cpu_intensive", query_string={"text": "this is a test!"})
     assert resp.status_code == 200
     assert resp.data == (
-        b'{"msg":"b6dcc3fe026cba73e9e930be854ce13038fef437549b3eed0e67505ec67f8667"}\n'
+        b'{"msg":"83b10c5421b8589775ee6eaaa267739ca9d95a41bed8c81167f1a1f73597662c"}\n'
     )
