@@ -15,7 +15,7 @@ dependencies = [
     "pyyaml>=6.0.2",
     "requests>=2.33.1",
     "responses>=0.25.7",
-    "ruff>=0.14.3",
+    "ruff>=0.15.11",
     "stamina>=25.1.0",
     "waitress>=3.0.2",
 ]
