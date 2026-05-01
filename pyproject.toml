@@ -16,6 +16,6 @@ dependencies = [
     "requests>=2.33.1",
     "responses>=0.25.7",
     "ruff>=0.15.11",
-    "stamina>=25.1.0",
+    "stamina>=26.1.0",
     "waitress>=3.0.2",
 ]
