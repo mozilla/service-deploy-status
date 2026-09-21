@@ -4,6 +4,5 @@
 
 from app.main import create_app
 
-
 # NOTE(willkg): this allows us to wrap the app in middleware later
 wsgi_app = create_app()

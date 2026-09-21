@@ -6,7 +6,6 @@ import json
 import logging
 from logging.config import dictConfig
 
-
 LOGGER = logging.getLogger(__name__)
 
 
