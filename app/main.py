@@ -11,20 +11,24 @@ import string
 import time
 from urllib.parse import urlparse
 
+import requests
+import stamina
 from flask import (
-    abort,
     Flask,
+    abort,
     jsonify,
     render_template,
     request,
     send_from_directory,
 )
-import requests
-import stamina
 
 from app.libsystems import get_systems_data
 from app.observability import log_settings, setup_logging
 from app.settings import settings
+
+
+class IntentionalException(Exception):
+    pass
 
 
 @stamina.retry(on=requests.exceptions.RequestException, attempts=3)
@@ -66,7 +70,7 @@ def log_render_time(fun):
                 status_code = exc.code
             else:
                 status_code = 500
-            raise exc
+            raise
 
         finally:
             logger.info(
@@ -137,9 +141,7 @@ def create_app(settings_overrides=None):
     @log_render_time
     def index_page():
         systems_data = get_systems_data()
-        systems = list(
-            sorted([(key, len(val)) for key, val in systems_data.systems.items()])
-        )
+        systems = sorted([(key, len(val)) for key, val in systems_data.systems.items()])
         return render_template("index.html", systems=systems)
 
     @app.route("/system/<system>", methods=["GET"])
@@ -225,7 +227,7 @@ def create_app(settings_overrides=None):
     @app.route("/throw_error", methods=["GET"])
     @log_render_time
     def throw_error_page():
-        raise Exception("Intentional unhandled exception")
+        raise IntentionalException("Intentional unhandled exception")
 
     @app.route("/cpu_intensive", methods=["GET"])
     @log_render_time

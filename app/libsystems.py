@@ -5,8 +5,8 @@
 import functools
 import json
 
-from pydantic import BaseModel
 import yaml
+from pydantic import BaseModel
 
 
 class Environment(BaseModel):

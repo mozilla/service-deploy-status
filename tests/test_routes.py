@@ -63,7 +63,7 @@ def test_dockerflow_version(client):
     data = json.loads(resp.data)
     # NOTE(willkg): we test that it has the right keys, but not the actual contents
     # since we don't know if it's running in a local dev environment or in CI
-    assert list(sorted(data.keys())) == ["build", "commit", "source", "version"]
+    assert sorted(data.keys()) == ["build", "commit", "source", "version"]
 
 
 @pytest.fixture()
